@@ -404,6 +404,197 @@ namespace CoordinateSystem
 	}
 }
 
+
+// Ex. 6
+namespace ITFirm
+{
+	const size_t NAME_SIZE = 100;
+	const size_t EMPLOYEES_COUNT = 100;
+	const int POSITIONS_COUNT = 4;
+	const int GRADE_MIN = 1;
+	const int GRADE_MAX = 100;
+
+	enum class Positions
+	{
+		SoftwareEngineer = 1, 
+		SeniorSoftwareEngineer, 
+		EngineerManager, 
+		LeadSoftwareEngineer
+	};
+
+	struct Employee
+	{
+		char name[NAME_SIZE + 1];
+		Positions position;
+		double salary;
+		int grade;
+	};
+
+	struct Firm
+	{
+		Employee employees[EMPLOYEES_COUNT];
+		size_t employeesCount;
+		double averageSalary;
+	};
+
+	Employee createEmployee()
+	{
+		Employee employee;
+		
+		std::cout << "\nName: ";
+		std::cin.getline(employee.name, NAME_SIZE + 1);
+
+		std::cout << "Available Positions:\n";
+		std::cout << "\t1. Software Engineer\n";
+		std::cout << "\t2. Senior Software Engineer\n";
+		std::cout << "\t3. Engineer Manager\n";
+		std::cout << "\t4. Lead Software Engineer\n";
+
+		int position;
+		std::cout << "Position: ";
+		std::cin >> position;
+		employee.position = Positions(position);
+		std::cout << "Salary: ";
+		std::cin >> employee.salary;
+		std::cout << "Grade: ";
+		std::cin >> employee.grade;
+		std::cin.ignore();
+
+		return employee;
+	}
+
+    void printEmployee(const Employee& employee)
+    {
+		std::cout << "Name: " << employee.name << "\n";
+		std::cout << "Position: ";
+		switch (employee.position)
+		{
+		case Positions::SoftwareEngineer:
+			std::cout << "Software Engineer";
+			break;
+        case Positions::SeniorSoftwareEngineer:
+			std::cout << "Senior Software Engineer";
+			break;
+		case Positions::EngineerManager:
+			std::cout << "Engineer Manager";
+			break;
+		case Positions::LeadSoftwareEngineer:
+			std::cout << "Lead Software Engineer";
+			break;
+		default:
+			std::cout << "Invalid";
+		}
+		std::cout << "\n";
+		std::cout << "Salary: " << employee.salary << "\n";
+		std::cout << "Grade: " << employee.grade << "\n\n";
+    }
+
+	double calculateAverageSalary(const Firm& firm)
+	{
+		double sum = 0;
+		for (size_t i = 0; i < firm.employeesCount; i++)
+		{
+			sum += firm.employees[i].salary;
+		}
+		return sum / firm.employeesCount;
+	}
+
+	Firm createFirm(const size_t employeesCount)
+	{
+		Firm firm;
+
+		firm.employeesCount = employeesCount;
+		for (size_t i = 0; i < employeesCount; i++)
+		{
+			firm.employees[i] = createEmployee();
+		}
+
+		firm.averageSalary = calculateAverageSalary(firm);
+		return firm;
+	}
+
+	Employee* getEmployees(const Firm& firm, const double minSalary, size_t& employeesCount)
+	{
+		Employee employees[EMPLOYEES_COUNT];
+		employeesCount = 0;
+		for (size_t i = 0; i < firm.employeesCount; i++)
+		{
+			if (firm.employees[i].salary > minSalary
+				|| abs(firm.employees[i].salary - minSalary) < EPSILON)
+				employees[employeesCount++] = firm.employees[i];
+		}
+
+		Employee* fixedEmployees = new Employee[employeesCount];
+		for (size_t i = 0; i < employeesCount; i++)
+		{
+			strcpy_s(fixedEmployees[i].name, strlen(employees[i].name) + 1, employees[i].name);
+			fixedEmployees[i].position = employees[i].position;
+			fixedEmployees[i].salary = employees[i].salary;
+			fixedEmployees[i].grade = employees[i].grade;
+		}
+		return fixedEmployees;
+	}
+
+	void sortEmployeesByName(Employee* employees, const size_t employeesCount)
+	{
+		for (size_t i = 0; i < employeesCount; i++)
+		{
+			size_t minIndex = i;
+			for (size_t j = i + 1; j < employeesCount; j++)
+			{
+				if (strcmp(employees[minIndex].name, employees[j].name) > 0)
+					minIndex = j;
+			}
+
+			if (minIndex != i)
+			{
+				std::swap(employees[i], employees[minIndex]);
+			}
+		}
+	}
+
+	void printEmployees(const Firm& firm, const double minSalary)
+	{
+		size_t employeesCount;
+		Employee* employees = getEmployees(firm, minSalary, employeesCount);
+		sortEmployeesByName(employees, employeesCount);
+
+		for (size_t i = 0; i < employeesCount; i++)
+		{
+			printEmployee(employees[i]);
+		}
+	}
+
+
+    void printMinMaxGrades(const Firm& firm)
+    {
+		int minGrades[POSITIONS_COUNT] = { GRADE_MAX, GRADE_MAX, GRADE_MAX, GRADE_MAX };
+		int maxGrades[POSITIONS_COUNT] = { GRADE_MIN, GRADE_MIN, GRADE_MIN, GRADE_MIN };
+
+		for (size_t i = 0; i < firm.employeesCount; i++)
+		{
+			int positionIndex = (int)firm.employees[i].position - 1;
+			if (minGrades[positionIndex] > firm.employees[i].grade)
+				minGrades[positionIndex] = firm.employees[i].grade;
+			if (maxGrades[positionIndex] < firm.employees[i].grade)
+				maxGrades[positionIndex] = firm.employees[i].grade;
+		}
+
+		const char* positions[POSITIONS_COUNT] = {"Software Engineer",
+			"Senior Software Engineer", 
+			"Engineer Manager", 
+			"Lead Software Engineer" };
+
+		std::cout << "Min and Max Grades\n";
+		for (size_t i = 0; i < POSITIONS_COUNT; i++)
+		{
+			std::cout << positions[i] << ":\n";
+			std::cout << "\tMin Grade: " << minGrades[i] << "\n";
+			std::cout << "\tMax Grade: " << maxGrades[i] << "\n\n";
+		}
+    }
+}
+
 int main()
 {
 	// Ex. 1
@@ -549,4 +740,22 @@ int main()
 		std::cout << "Outside\n";
 	else
 		std::cout << "On contour\n";*/
+
+
+	// Ex. 6
+	/*size_t n;
+	std::cin >> n;
+	std::cin.ignore();
+
+	ITFirm::Firm firm = ITFirm::createFirm(n);
+	std::cout << "\nAverage salary: " << firm.averageSalary << "\n\n";
+
+	double minSalary;
+	std::cout << "Minimum salary: ";
+	std::cin >> minSalary;
+	std::cout << "\nEmployees with salary >= " << minSalary << "\n";
+	ITFirm::printEmployees(firm, minSalary);
+	std::cout << "\n";
+
+	ITFirm::printMinMaxGrades(firm);*/
 }
