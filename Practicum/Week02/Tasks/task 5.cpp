@@ -70,7 +70,7 @@ namespace DeviceandWarehouseNS
 		return w;
 	}
 	
-	void writeInFile(std::ofstream& ofs, const Warehouse& w, const Kind k)
+	void writeInFileKind(std::ofstream& ofs, const Warehouse& w, const Kind k)
 	{
 		int i = 0;
 		ofs << "Devices with kind " << (int) k << std::endl;
@@ -87,16 +87,22 @@ namespace DeviceandWarehouseNS
 		ofs << "Owner name " << w.nameOfOwner << std::endl;
 	}
 
-	void writeInFile(const char* filename, const Warehouse& w,const Kind k)
+	void writeInFileKind(const char* filename, const Warehouse& w,const Kind k)
 	{
 		if (!filename) return;
 		std::ofstream ofs(filename);
 		if (!ofs.is_open()) return;
-		return writeInFile(ofs, w, k);
+		return writeInFileKind(ofs, w, k);
+	}
+
+	void writeInFile(const char* filename, const Warehouse& w)
+	{
+		while (!filename) return;
+
 	}
 }
 
-int main12412()
+int main()
 {
 
 	return 0;

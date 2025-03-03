@@ -13,6 +13,7 @@ namespace TemplateNS {
 
     char** readTemplate(std::ifstream& ifs) {
         char** text = new char* [MAX_LINES_SIZE];
+        
         for (size_t i = 0; i < MAX_LINES_SIZE; i++) {
             text[i] = new char[MAX_ROW_SIZE]();
         }
@@ -162,7 +163,7 @@ namespace TemplateNS {
     }
 }
 
-int main() {
+int main1564() {
     using namespace TemplateNS;
 
     char** templateText = readTemplate("template.txt");
