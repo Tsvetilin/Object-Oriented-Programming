@@ -31,9 +31,9 @@ namespace MatrixNS {
 		if (ar == nullptr) {
 			return 0;
 		}
-		int** transposed_matrix = create_matrix(N, M);
-		for (int i = 0;i < N;i++) {
-			for (int j = 0;j < M;j++) {
+		int** transposed_matrix = create_matrix(M, N);
+		for (int i = 0;i < M;i++) {
+			for (int j = 0;j < N;j++) {
 				transposed_matrix[i][j] = ar[j][i];
 			}
 		}
@@ -87,6 +87,12 @@ namespace MatrixNS {
 		return matrix;
 
 	}
+}
+void delete_matrix(int** matrix) {
+	for (int i = 0;i < N;i++) {
+		delete[] matrix[i];
+	}
+	delete[] matrix;
 }
 //zad 2
 namespace Complex_Numbers {
