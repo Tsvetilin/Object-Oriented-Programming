@@ -1,0 +1,324 @@
+//ex. 1
+#include <iostream>
+#include <fstream>
+
+void writeToFile() {
+    int a, b, c;
+    std::cout << "Enter three numbers: ";
+    std::cin >> a >> b >> c;
+
+    int sum = a + b + c;
+    int mult = a * b * c;
+
+    std::ofstream outFile("result.txt");
+    if (!outFile.is_open()) {
+        std::cerr << "Error opening file for writing!" << std::endl;
+        return;
+    }
+
+    outFile << sum << " " << mult;
+    outFile.close();
+}
+
+void readFromFile() {
+    std::ifstream inFile("result.txt");
+    if (!inFile.is_open()) {
+        std::cerr << "Error opening file for reading";
+        return;
+    }
+
+    int sum, mult;
+    inFile >> sum >> mult;
+    inFile.close();
+    
+    std::cout << "Difference is: " << (sum - mult) << std::endl;
+}
+
+int main()
+{
+    writeToFile();
+    readFromFile();
+}
+
+//ex. 2
+#include <iostream>
+#include <fstream>
+using namespace std;
+//constants
+const int MAX_RELATION_SIZE = 25;
+
+struct Pair {
+
+    unsigned int first;
+    unsigned int second;
+
+};
+
+struct Relation {
+    unsigned int size = 0;
+    Pair pairs[MAX_RELATION_SIZE];
+};
+
+void writeRelationToFile(const char* fileName, const Relation& rel) {
+    std::ofstream outFile(fileName);
+    if (!outFile.is_open()) {
+        cout << "Problem with opening the file\n";
+        return;
+    }
+    outFile << rel.size << endl;
+    for (int i = 0; i < rel.size; i++)
+    {
+        outFile << rel.pairs[i].first <<" "<< rel.pairs[i].second<<endl;
+    }
+    outFile.close();
+}
+
+void readRelationFromFile(const char* fileName, Relation& rel) {
+    std::ifstream inFile(fileName);
+    if (!inFile.is_open()) {
+        std::cerr << "Error opening file for reading\n";
+        return;
+    }
+
+    inFile >> rel.size;
+    for (int i = 0; i < rel.size; i++)
+    {
+        inFile >> rel.pairs[i].first >> rel.pairs[i].second;
+    }
+    
+}
+
+void addPairToRelation(Relation& rel, const Pair& pair) {
+    if (rel.size < MAX_RELATION_SIZE) {
+        rel.size = rel.size + 1;
+        rel.pairs[rel.size - 1] = pair;
+    }
+    else {
+        std::cerr << "Relation is already full!";
+    }
+
+}
+
+void printRelation(const Relation& rel) {
+    cout << "Relation contains " << rel.size << " pairs:\n";
+    for (int i = 0; i < rel.size; i++) {
+        cout << "(" << rel.pairs[i].first << ", " << rel.pairs[i].second << ")\n";
+    }
+}
+
+int main() {
+    Relation rel;
+
+    addPairToRelation(rel, { 1, 2 });
+    addPairToRelation(rel, { 3, 4 });
+    addPairToRelation(rel, { 5, 6 });
+
+    cout << "Original Relation:\n";
+    printRelation(rel);
+
+    writeRelationToFile("relation.txt", rel);
+
+    Relation loadedRel;
+    readRelationFromFile("relation.txt", loadedRel);
+
+    cout << "\nLoaded Relation from File:\n";
+    printRelation(loadedRel);
+
+    return 0;
+}
+//ex. 3
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+//constants
+const unsigned int MIN_VALUE = 0;
+const unsigned int MAX_VALUE = 255;
+char separator = '|';
+
+
+struct Color {
+    unsigned int red; //rgb
+    unsigned int green;
+    unsigned int blue;
+};
+
+Color findColor(int code) {
+    Color color;
+    color.red = (code >> 16) & 0xFF;
+    color.green = (code >> 8) & 0xFF;
+    color.blue = code & 0xFF;
+
+    return color;
+}
+
+int readColorsFromFile(std::ifstream& file, Color colors[]) {
+    int code, count = 0;
+    while (file >> code) {
+        colors[count] = findColor(code);
+        count++;
+
+        if (!(file >> separator)) {
+            break;
+        }
+    }
+    return count;
+}
+
+void writeColorsToFile(std::ofstream& file, Color color[], int size) {
+
+    int code = 0;
+
+    for (int i = 0; i < size; i++)
+    {
+        code = color[i].red * 65536 + color[i].green * 256 + color[i].blue;
+        file << code;
+        if (i < size - 1) file << separator;
+    }
+}
+
+void writeRedColorsToFile(Color color[], int size) {
+    std::ofstream file("red.txt");
+    if (!file.is_open()) {
+        std::cerr << "Error opening the file\n";
+        return;
+    }
+
+    int code = 0;
+
+    for (int i = 0; i < size; i++)
+    {
+        int redish = color[i].red;
+        if (redish > 250) {
+            code = color[i].red * 65536 + color[i].green * 256 + color[i].blue;
+            file << code;
+            if (i < size - 1) file << separator;
+        }
+    }
+}
+
+int main()
+{
+    Color colors[] = {
+     {251, 100, 50},
+     {251, 100, 50},
+     {200, 50, 255},
+     {200, 50, 255},
+     {200, 50, 255},
+     {251, 100, 50},
+     {251, 100, 50},// Red > 250 (will be written)
+     {200, 50, 255},  // Red <= 250 (ignored)
+     {255, 0, 0},     // Red > 250 (will be written)
+    };
+    int size = 9;
+    writeRedColorsToFile(colors, size);
+}
+
+//ex. 4
+#include <iostream>
+#include <fstream>
+
+const int  MAX_LINE = 1024;
+const int  MAX_KEYS = 10;
+const int  MAX_WORD = 50;
+
+
+struct KeyValue {
+    char key[MAX_WORD];   
+    char value[MAX_WORD]; 
+};
+
+void replacePlaceholders(char* line, KeyValue replacements[], int numKeys) {
+    char temp[MAX_LINE]; 
+    int tempIndex = 0;
+    int i = 0;
+
+    while (line[i] != '\0') {
+        if (line[i] == '{') {  // Start of a placeholder
+            int j = i + 1;
+            while (line[j] != '\0' && line[j] != '}') j++;
+
+            if (line[j] == '}') { // End of valid placeholder found
+                char placeholder[MAX_WORD];
+                int p = 0;
+
+                for (int k = i + 1; k < j; k++) {
+                    placeholder[p++] = line[k];
+                }
+                placeholder[p] = '\0'; // Null-terminate the extracted placeholder
+
+                // Search for the placeholder in replacements
+                bool found = false;
+                for (int k = 0; k < numKeys; k++) {
+                    if (strcmp(placeholder, replacements[k].key)) {
+                        int v = 0;
+                        while (replacements[k].value[v] != '\0') {
+                            temp[tempIndex++] = replacements[k].value[v++];
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) { // If not found, copy placeholder as is
+                    for (int k = i; k <= j; k++) {
+                        temp[tempIndex++] = line[k];
+                    }
+                }
+
+                i = j + 1; // Move past the placeholder
+                continue;
+            }
+        }
+       
+        temp[tempIndex++] = line[i++];
+    }
+    temp[tempIndex] = '\0'; 
+
+    int k = 0;
+    while (temp[k] != '\0') {
+        line[k] = temp[k];
+        k++;
+    }
+    line[k] = '\0'; 
+}
+
+// Function to process file and replace placeholders
+void processFile(const char* inputFile, const char* outputFile, KeyValue replacements[], int numKeys) {
+    std::ifstream inFile(inputFile);
+    if (!inFile) {
+        std::cout << "Error opening input file!" << std::endl;
+        return;
+    }
+
+    std::ofstream outFile(outputFile);
+    if (!outFile) {
+        std::cout << "Error opening output file!" << std::endl;
+        inFile.close();
+        return;
+    }
+
+    char line[MAX_LINE];
+    while (inFile.getline(line, MAX_LINE)) {  
+        replacePlaceholders(line, replacements, numKeys);
+        outFile << line << std::endl;
+    }
+
+    inFile.close();
+    outFile.close();
+}
+
+int main() {
+   
+    KeyValue replacements[MAX_KEYS] = {
+        {"title", "Veliki"},
+        {"recipient_name", "Pop Armeniya"},
+        {"message", "Iskam da se oplacha!!!"},
+        {"sender_name", "FMI-student"}
+    };
+
+    processFile("input.txt", "output.txt", replacements, 4);
+    std::cout << "Processing complete. Check output.txt" << std::endl;
+
+    return 0;
+}
