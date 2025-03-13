@@ -31,8 +31,8 @@ struct Y {
 };
 
 struct X {
-	Y b;
-	Z c;
+	Y y;
+	Z z;
 
 	X() {
 		std::cout << "X()" << std::endl;

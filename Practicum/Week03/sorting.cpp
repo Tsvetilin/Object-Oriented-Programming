@@ -4,15 +4,20 @@
 #include <fstream>
 #include <cmath>
 
-constexpr size_t MAX_NAME_SIZE = 100;
-constexpr size_t MAX_SIZE = 50;
-constexpr double EPS = 1e-6;
+namespace Constants
+{
+	constexpr size_t MAX_NAME_SIZE = 100;
+	constexpr size_t MAX_SIZE = 50;
+	constexpr double EPS = 1e-6;
+}
 
 namespace StudentNS
 {
+	using namespace Constants;
+
 	struct Student
 	{
-		char name[MAX_SIZE];
+		char name[MAX_SIZE + 1];
 		size_t age;
 		double grade;
 	};
@@ -110,6 +115,11 @@ namespace StudentsNS
 
 		std::cout << std::endl;
 	}
+
+	void freeStudents(Students& students)
+	{
+		delete[] students.students;
+	}
 }
 
 int main()
@@ -131,7 +141,7 @@ int main()
 		printStudents(students);
 	}
 
-	delete[] students.students;
+	freeStudents(students);
 
 	return 0;
 }
