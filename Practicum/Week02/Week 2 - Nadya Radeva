@@ -1,0 +1,602 @@
+#include<iostream>
+#include<fstream>
+
+//Exercise 1
+//int f(const char* file) {
+//	if (!file) {
+//		std::cerr << "Invalid input!" << std::endl;
+//		return 1;
+//	}
+//
+//	std::ifstream ifs(file);
+//	if (!ifs) {
+//		std::cerr << "Error opening file!" << std::endl;
+//		return 1;
+//	}
+//
+//	return f(ifs);
+//}
+
+int findSub(std::ifstream& file) {
+	if (!file.is_open()) {
+		std::cerr << "Error opening file!" << std::endl;
+		return 1;
+	}
+
+	int sum = 0, pr = 0;
+	file >> sum >> pr;
+
+	int sub = sum - pr;
+
+	return sub;
+}
+
+//Exercise 2
+struct Pair {
+	int a, b;
+};
+
+const int MAX_NUMBER_OF_PAIRS = 25;
+
+struct Relation {
+	Pair pairs[MAX_NUMBER_OF_PAIRS];
+	int size = 0;
+};
+
+bool writeRelationToFile(const Relation& r, const char* filename) {
+	std::ofstream ofs(filename);
+	if (!ofs) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return false;
+	}
+	ofs << r.size << std::endl;
+	for (int i = 0; i < r.size; i++) {
+		ofs << r.pairs[i].a << " " << r.pairs[i].b << std::endl;
+	}
+	return true;
+}
+
+bool readRelationFromFile(Relation& r, const char* filename) {
+	std::ifstream ifs(filename);
+	if (!ifs.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return false;
+	}
+
+	ifs >> r.size;
+	if (r.size < 0 || r.size > MAX_NUMBER_OF_PAIRS) {
+		std::cerr << "Invalid size in file!" << std::endl;
+		return false;
+	}
+	for (int i = 0; i < r.size; i++) {
+		ifs >> r.pairs[i].a >> r.pairs[i].b;
+	}
+	return true;
+}
+
+bool addPairToRelation(Relation& r, const Pair& p) {
+	if (r.size >= MAX_NUMBER_OF_PAIRS) {
+		std::cerr << "The max number of relations has been reacher!" << std::endl;
+		return false;
+	}
+	r.pairs[r.size++] = p;
+	return true;
+}
+
+//Exercise 3
+const int MIN_COLOUR = 0;
+const int MAX_COLOUR = 255;
+
+struct Colour {
+	int r, g, b;
+};
+
+Colour findColour(int input) {
+	Colour colour;
+
+	colour.r = (input / 65536) % 256;
+	colour.g = (input / 256) % 256;
+	colour.b = input % 256;
+
+	return colour;
+}
+
+int readColorsFromFile(std::ifstream& file, Colour colours[], int maxSize) {
+	int count = 0, rgb;
+	char separator;
+	while (count < maxSize && file >> rgb) {
+		colours[count++] = findColour(rgb);
+		file >> separator;
+	}
+	return count;
+}
+
+void writeColorsToFile(std::ofstream& file, Colour colours[], int size) {
+	for (int i = 0; i < size; i++) {
+		int rgb = (colours[i].r * 65536) + (colours[i].g * 256) + colours[i].b;
+		file << rgb;
+		if (i < size - 1) file << '|';
+	}
+}
+
+void writeRedColorsToFile(Colour colours[], int size) {
+	std::ofstream file("red.txt");
+	if (!file.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return;
+	}
+
+	bool first = true;
+	for (int i = 0; i < size; i++) {
+		if (colours[i].r > 250) {
+			if (!first) file << '|';
+			file << (colours[i].r * 65536) + (colours[i].g * 256) + colours[i].b;
+			first = false;
+		}
+	}
+}
+
+//Exercise 4
+void myStrCpy(const char* source, char* dest) {
+	if (!source || !dest) {
+		return;
+	}
+
+	while (*source) {
+		*dest = *source;
+		dest++;
+		source++;
+	}
+
+	*dest = '\0';
+}
+
+void myStrCat(char* dest, const char* src) {
+	while (*dest) {
+		dest++;
+	}
+	while ((*dest++ = *src++));
+}
+
+
+const int MAX_LINE = 256;
+const int MAX_PAIRS = 10;
+const int MAX_KEY = 50;
+const int MAX_VALUE = 200;
+
+struct KeyValue {
+	char key[MAX_KEY];
+	char value[MAX_VALUE];
+};
+
+int loadReplacements(const char* filename, KeyValue replacements[], int maxSize) {
+	std::ifstream file(filename);
+	if (!file.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return 0;
+	}
+
+	int count = 0;
+	while (count < maxSize && file >> replacements[count].key) {
+		file.ignore();
+		file.getline(replacements[count].value, MAX_VALUE);
+		count++;
+	}
+	file.close();
+	return count;
+}
+
+void replacePlaceholders(const char* inputFile, const char* outputFile, KeyValue replacements[], int count) {
+	std::ifstream inFile(inputFile);
+	std::ofstream outFile(outputFile);
+	if (!inFile.is_open() || !outFile.is_open()) {
+		std::cerr << "Couldn't open file!!" << std::endl;
+		return;
+	}
+
+	char line[MAX_LINE];
+	while (inFile.getline(line, MAX_LINE)) {
+		for (int i = 0; i < count; i++) {
+			char* pos;
+			while ((pos = strstr(line, replacements[i].key))) {
+				char temp[MAX_LINE];
+				myStrCpy(temp, pos + strlen(replacements[i].key));
+				*pos = '\0';
+				myStrCat(line, replacements[i].value);
+				myStrCat(line, temp);
+			}
+		}
+		outFile << line << "\n";
+	}
+
+	inFile.close();
+	outFile.close();
+}
+
+//Exercise 5
+const int MAX_DEVICE_LEN = 32;
+const int MAX_DISTRIBUTOR_NAME = 32;
+const int MAX_DEVICES = 100;
+const int MAX_HOLDER_NAME = 32;
+
+enum class DeviceType {
+	TV,
+	Smartphone,
+	Laptop,
+	PC,
+	Camera
+};
+
+struct Device {
+	char name[MAX_DEVICE_LEN + 1];
+	int quantity;
+	double price;
+	DeviceType type;
+	char distributor[MAX_DISTRIBUTOR_NAME + 1];
+};
+
+struct Warehouse {
+	Device devices[MAX_DEVICES];
+	char holder[MAX_HOLDER_NAME + 1];
+	int deviceCount;
+};
+
+void createDevice(Device& d, const char* name, int quatity, double price, DeviceType type, const char* distributor) {
+	myStrCpy(name, d.name);
+	d.quantity = quatity;
+	d.price = price;
+	d.type = type;
+	myStrCpy(distributor, d.distributor);
+}
+
+void createWarehouse(Warehouse& w, const char* holder) {
+	myStrCpy(holder, w.holder);
+}
+
+void addDevice(Warehouse& w, const Device& d) {
+	for (int i = 0; i < MAX_DEVICES; i++) {
+		if (w.devices[i].name[0] == '\0') {
+			w.devices[i] = d;
+			return;
+		}
+	}
+}
+
+void serialiseWarehouse(const Warehouse& w, const char* filename) {
+	std::ofstream file(filename);
+	if (!file.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return;
+	}
+
+	file << w.holder << std::endl;
+	for (int i = 0; i < MAX_DEVICES; i++) {
+		if (w.devices[i].name[0] != '\0') {
+			file << w.devices[i].name << "|" << w.devices[i].quantity << "|" << w.devices[i].price << "|" << (int)w.devices[i].type << "|" << w.devices[i].distributor << std::endl;
+		}
+	}
+}
+
+void deserialiseWarehouse(Warehouse& w, const char* filename) {
+	std::ifstream file(filename);
+	if (!file.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return;
+	}
+
+	file.getline(w.holder, MAX_HOLDER_NAME);
+	Device d;
+	char line[MAX_LINE];
+
+	while (file.getline(line, MAX_LINE)) {
+		char name[MAX_DEVICE_LEN];
+		char distributor[MAX_DISTRIBUTOR_NAME];
+
+		int index = 0, tokenStart = 0, tokenCount = 0;
+		int id = 0;
+		double price = 0.0;
+		DeviceType type = (DeviceType)0;
+
+		for (int i = 0; line[i] != '\0'; ++i) {
+			if (line[i] == '|') {
+				line[i] = '\0';
+				char* token = &line[tokenStart];
+
+				if (tokenCount == 0) {
+					myStrCpy(name, token);
+				}
+				else if (tokenCount == 1) {
+					id = 0;
+					for (int j = 0; token[j] != '\0'; ++j) {
+						id = id * 10 + (token[j] - '0');
+					}
+				}
+				else if (tokenCount == 2) {
+					price = 0.0;
+					double factor = 1.0;
+					bool isFraction = false;
+
+					for (int j = 0; token[j] != '\0'; ++j) {
+						if (token[j] == '.') {
+							isFraction = true;
+							continue;
+						}
+						int digit = token[j] - '0';
+						if (isFraction) {
+							factor /= 10;
+							price += digit * factor;
+						}
+						else {
+							price = price * 10 + digit;
+						}
+					}
+				}
+				else if (tokenCount == 3) {
+					int enumValue = 0;
+					for (int j = 0; token[j] != '\0'; ++j) {
+						enumValue = enumValue * 10 + (token[j] - '0');
+					}
+					type = (DeviceType)enumValue;
+				}
+				else if (tokenCount == 4) {
+					myStrCpy(distributor, token);
+				}
+
+				tokenStart = i + 1;
+				tokenCount++;
+			}
+		}
+
+		createDevice(d, name, id, price, type, distributor);
+		addDevice(w, d);
+	}
+}
+
+void saveDevicesByType(const Warehouse& w, DeviceType type, const char* filename) {
+	std::ofstream file(filename);
+	if (!file.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return;
+	}
+
+	for (int i = 0; i < MAX_DEVICES; ++i) {
+		if (w.devices[i].type == type) {
+			file << w.devices[i].name << " | " << w.devices[i].quantity << " | " << w.devices[i].price << " | " << (char)w.devices[i].type << " | " << w.devices[i].distributor << std::endl;
+		}
+	}
+
+	file.close();
+}
+
+void printWarehouse(const Warehouse& w) {
+	std::cout << "Warehouse holder: " << w.holder << std::endl;
+	std::cout << "Total devices: " << w.deviceCount << std::endl;
+
+	for (int i = 0; i < w.deviceCount; ++i) {
+		std::cout << "Device " << (i + 1) << ":" << std::endl;
+		std::cout << "  Name: " << w.devices[i].name << std::endl;
+		std::cout << "  ID: " << w.devices[i].quantity << std::endl;
+		std::cout << "  Price: " << w.devices[i].price << std::endl;
+		std::cout << "  Type: " << (char)w.devices[i].type << std::endl;
+		std::cout << "  Manufacturer: " << w.devices[i].distributor << std::endl;
+	}
+}
+
+void sortDevicesByPrice(Warehouse& w, bool ascending = true) {
+	for (int i = 0; i < w.deviceCount - 1; ++i) {
+		int index = i;
+
+		for (int j = i + 1; j < w.deviceCount; ++j) {
+			if ((ascending && w.devices[j].price < w.devices[index].price) ||
+				(!ascending && w.devices[j].price > w.devices[index].price)) {
+				index = j;
+			}
+		}
+
+		if (index != i) {
+			Device temp = w.devices[i];
+			w.devices[i] = w.devices[index];
+			w.devices[index] = temp;
+		}
+	}
+}
+
+void sortDevicesByStock(Warehouse& w, bool ascending = true) {
+	for (int i = 0; i < w.deviceCount - 1; ++i) {
+		int index = i;
+
+		for (int j = i + 1; j < w.deviceCount; ++j) {
+			if ((ascending && w.devices[j].quantity < w.devices[index].quantity) ||
+				(!ascending && w.devices[j].quantity > w.devices[index].quantity)) {
+				index = j;
+			}
+		}
+
+		if (index != i) {
+			Device temp = w.devices[i];
+			w.devices[i] = w.devices[index];
+			w.devices[index] = temp;
+		}
+	}
+}
+
+Device findMostExpensiveDevice(const Warehouse& w) {
+	if (w.deviceCount == 0) {
+		std::cerr << "Warehouse is empty!" << std::endl;
+		return Device();
+	}
+
+	int maxIndex = 0;
+	for (int i = 1; i < w.deviceCount; ++i) {
+		if (w.devices[i].price > w.devices[maxIndex].price) {
+			maxIndex = i;
+		}
+	}
+	return w.devices[maxIndex];
+}
+
+Device findCheapestDevice(const Warehouse& w) {
+	if (w.deviceCount == 0) {
+		std::cerr << "Warehouse is empty!" << std::endl;
+		return Device();
+	}
+
+	int minIndex = 0;
+	for (int i = 1; i < w.deviceCount; ++i) {
+		if (w.devices[i].price < w.devices[minIndex].price) {
+			minIndex = i;
+		}
+	}
+	return w.devices[minIndex];
+}
+
+
+int main() {
+	//Exercise 1
+	//int a, b, c;
+	//std::cout << "Enter 3 numbers: ";
+	//std::cin >> a >> b >> c;
+
+	//if (!std::cin) {
+	//	std::cerr << "Invalid input!" << std::endl;
+	//	return 1;
+	//}
+
+	//int sum = a + b + c;
+	//int pr = a * b * c;
+
+	//std::ofstream file("result.txt");
+	//if (!file.is_open()) {
+	//	std::cerr << "Couldn't open file!" << std::endl;
+	//	return 1;
+	//}
+
+	//file << sum << " " << pr;
+	//file.close();
+
+	//std::ifstream file2("result.txt");
+	//if (!file2.is_open()) {
+	//	std::cerr << "Couldn't open file!" << std::endl;
+	//	return 1;
+	//}
+
+	//file2.clear();
+	//file2.seekg(0);
+
+	//std::cout << "Result: " << findSub(file2) << std::endl;
+
+	//file2.close();
+
+	//Exercise 2
+	//Relation r;
+	//int num;
+
+	//std::cout << "Enter number of pairs: ";
+	//std::cin >> num;
+	//if (!std::cin || num < 0 || num > MAX_NUMBER_OF_PAIRS) {
+	//	std::cerr << "Invalid input!" << std::endl;
+	//	return 1;
+	//}
+
+	//r.size = num;
+	//for (int i = 0; i < num; i++) {
+	//	std::cout << "Enter pair " << i + 1 << ": ";
+	//	std::cin >> r.pairs[i].a >> r.pairs[i].b;
+	//	if (!std::cin) {
+	//		std::cerr << "Invalid input!" << std::endl;
+	//		return 1;
+	//	}
+	//}
+
+	//const char* filename = "relation.txt";
+	//if (!writeRelationToFile(r, filename)) {
+	//	return 1;
+	//}
+
+	//Relation r2;
+	//if (!readRelationFromFile(r2, filename)) {
+	//	return 1;
+	//}
+
+	//Pair newPair;
+	//std::cout << "Enter pair to add: ";
+	//std::cin >> newPair.a >> newPair.b;
+	//if (!std::cin) {
+	//	std::cerr << "Invalid input!" << std::endl;
+	//	return 1;
+	//}
+
+	//if (addPairToRelation(r2, newPair)) {
+	//	writeRelationToFile(r2, filename);
+	//	std::cout << "The operation was successful!" << std::endl;
+	//}
+
+	//Exercise 3
+	/*std::ifstream inputFile("colors.txt");
+	if (!inputFile) {
+		std::cerr << "Error opening colors.txt!" << std::endl;
+		return 1;
+	}
+
+	Colour colours[MAX_COLOUR];
+	int colorCount = readColorsFromFile(inputFile, colours, MAX_COLOUR);
+	inputFile.close();
+
+	std::ofstream outputFile("output.txt");
+	if (!outputFile.is_open()) {
+		std::cerr << "Couldn't open file!" << std::endl;
+		return 1;
+	}
+	writeColorsToFile(outputFile, colours, colorCount);
+	outputFile.close();
+
+	writeRedColorsToFile(colours, colorCount);*/
+
+	//Exercise 4
+	/*KeyValue replacements[MAX_PAIRS];
+	int count = loadReplacements("replacements.txt", replacements, MAX_PAIRS);
+	replacePlaceholders("template.txt", "output.txt", replacements, count);
+	std::cout << "Replacement complete. Check output.txt." << std::endl;*/
+
+	//Exercise 5
+	Warehouse warehouse;
+	createWarehouse(warehouse, "John's Warehouse");
+
+	Device d1, d2, d3;
+	createDevice(d1, "Samsung TV", 10, 599.99, DeviceType::TV, "Samsung");
+	createDevice(d2, "iPhone 15", 5, 1099.99, DeviceType::Smartphone, "Apple");
+	createDevice(d3, "Dell Laptop", 8, 899.50, DeviceType::Laptop, "Dell");
+
+	addDevice(warehouse, d1);
+	addDevice(warehouse, d2);
+	addDevice(warehouse, d3);
+
+	std::cout << std::endl;
+
+	std::cout << "Warehouse Before Sorting: " << std::endl;
+	printWarehouse(warehouse);
+
+	sortDevicesByPrice(warehouse, true);
+	std::cout << "Warehouse Sorted by Price (Ascending): " << std::endl;
+	printWarehouse(warehouse);
+
+	sortDevicesByStock(warehouse, false);
+	std::cout << "Warehouse Sorted by Stock (Descending): " << std::endl;
+	printWarehouse(warehouse);
+
+	Device expensive = findMostExpensiveDevice(warehouse);
+	Device cheap = findCheapestDevice(warehouse);
+	std::cout << "Most Expensive Device: " << expensive.name << std::endl;
+	std::cout << "Cheapest Device: " << cheap.name << std::endl;
+
+	saveDevicesByType(warehouse, DeviceType::Laptop, "laptops.txt");
+
+	serialiseWarehouse(warehouse, "warehouse.txt");
+
+	Warehouse loadedWarehouse;
+	deserialiseWarehouse(loadedWarehouse, "warehouse.txt");
+	std::cout << "Warehouse After Deserialization: " << std::endl;
+	printWarehouse(loadedWarehouse);
+
+	return 0;
+}
