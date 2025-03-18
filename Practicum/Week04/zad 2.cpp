@@ -130,7 +130,7 @@ public:
 		problemArr[numOfProblem-1].changePassword(oldPassword, newPassword);
 	}
 
-	size_t calculateMaxPoints() {
+	size_t calculateMaxPoints() const{
 		size_t sum = 0;
 		for (int i = 0; i < NUM_OF_PROBLEMS_ON_EXAM; i++) {
 			sum = sum + problemArr[i].getPoints();
