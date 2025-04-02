@@ -58,29 +58,6 @@ void Duelist::setDeck(Deck newDeck) {
 	this->deck = newDeck;
 }
 
-void Duelist::nameSetterForObj(const Duelist& other) {
-	if (other.name == nullptr) {
-		std::cerr << "You new duelist name is invalid!" << std::endl;
-		return;
-	}
-
-	if (this->name == other.name) {
-		std::cerr << "The name of your duelist is the same as the previous one!" << std::endl;
-		return;
-	}
-
-	if (this->name != nullptr) {
-		this->freeName();
-	}
-
-	this->name = new char[strlen(other.name) + 1];
-	strcpy(this->name, other.name);
-}
-
-void Duelist::deckSetterForObj(const Duelist& other) {
-	this->deck = other.deck;
-}
-
 const char* Duelist::getName() const {
 	return this->name;
 }
@@ -114,8 +91,24 @@ void Duelist::removeMonsterCardFromDeck(size_t index) {
 }
 
 void Duelist::copyFrom(const Duelist& other) {
-	nameSetterForObj(other);
-	deckSetterForObj(other);
+	if (other.name == nullptr) {
+		std::cerr << "You new duelist name is invalid!" << std::endl;
+		return;
+	}
+
+	if (this->name == other.name) {
+		std::cerr << "The name of your duelist is the same as the previous one!" << std::endl;
+		return;
+	}
+
+	if (this->name != nullptr) {
+		this->freeName();
+	}
+
+	this->name = new char[strlen(other.name) + 1];
+	strcpy(this->name, other.name);
+
+	this->deck = other.deck;
 }
 
 void Duelist::freeName() {
