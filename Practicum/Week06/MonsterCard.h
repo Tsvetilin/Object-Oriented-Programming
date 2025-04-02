@@ -13,10 +13,6 @@ public:
 	void setAttackPoints(unsigned int newAttackPoints);
 	void setProtectPoints(unsigned int newProtectPoints);
 
-	void nameSetterForObj(const MonsterCard& other);
-	void attackPointsSetterForObj(const MonsterCard& other);
-	void protectPointsSetterForObj(const MonsterCard& other);
-
 	const char* getName() const;
 	unsigned int getAttackPoints() const;
 	unsigned int getProtectPoints() const;
