@@ -18,9 +18,6 @@ public:
 	void setMonsterCards(MonsterCard* newMonsterCards, size_t newMonsterCardsSize);
 	void setMagicCards(MagicCard* newMagicCards, size_t newMagicCardsSize);
 
-	void monsterCardsSetterForObj(const Deck& other);
-	void magicCardsSetterForObj(const Deck& other);
-
 	const MonsterCard* getMonsterCards() const;
 	const MagicCard* getMagicCards() const;
 	size_t getMonsterCardsSize() const;
