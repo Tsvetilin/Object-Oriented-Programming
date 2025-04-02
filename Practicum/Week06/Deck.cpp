@@ -54,32 +54,6 @@ void Deck::setMagicCards(MagicCard* newMagicCards, size_t newMagicCardsSize) {
     }
 }
 
-void Deck::monsterCardsSetterForObj(const Deck& other) {
-    if (other.monsterCardsSize > MAX_MONSTER_CARDS_IN_DECK || other.monsterCards == nullptr) {
-        std::cerr << "Invalid input!" << std::endl;
-        return;
-    }
-
-    this->monsterCardsSize = other.monsterCardsSize;
-
-    for (size_t i = 0; i < other.monsterCardsSize; ++i) {
-        this->monsterCards[i] = other.monsterCards[i];
-    }
-}
-
-void Deck::magicCardsSetterForObj(const Deck& other) {
-    if (other.magicCardsSize > MAX_MAGIC_CARDS_IN_DECK || other.magicCards == nullptr) {
-        std::cerr << "Invalid input!" << std::endl;
-        return;
-    }
-
-    this->magicCardsSize = other.magicCardsSize;
-
-    for (size_t i = 0; i < other.magicCardsSize; ++i) {
-        this->magicCards[i] = other.magicCards[i];
-    }
-}
-
 const MonsterCard* Deck::getMonsterCards() const {
     return this->monsterCards;
 }
@@ -177,8 +151,27 @@ void Deck::printDeckInfo() const {
 }
 
 void Deck::copyFrom(const Deck& other) {
-    magicCardsSetterForObj(other);
-    monsterCardsSetterForObj(other);
+    if (other.monsterCardsSize > MAX_MONSTER_CARDS_IN_DECK || other.monsterCards == nullptr) {
+        std::cerr << "Invalid input!" << std::endl;
+        return;
+    }
+
+    this->monsterCardsSize = other.monsterCardsSize;
+
+    for (size_t i = 0; i < other.monsterCardsSize; ++i) {
+        this->monsterCards[i] = other.monsterCards[i];
+    }
+
+    if (other.magicCardsSize > MAX_MAGIC_CARDS_IN_DECK || other.magicCards == nullptr) {
+        std::cerr << "Invalid input!" << std::endl;
+        return;
+    }
+
+    this->magicCardsSize = other.magicCardsSize;
+
+    for (size_t i = 0; i < other.magicCardsSize; ++i) {
+        this->magicCards[i] = other.magicCards[i];
+    }
 }
 
 void Deck::free() {
