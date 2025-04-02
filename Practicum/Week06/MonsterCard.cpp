@@ -5,9 +5,36 @@
 #pragma warning(disable:4996)
 
 void MonsterCard::copyFrom(const MonsterCard& other) {
-	nameSetterForObj(other);
-	attackPointsSetterForObj(other);
-	protectPointsSetterForObj(other);
+	if (other.name == nullptr) {
+		std::cerr << "You new card name is invalid!" << std::endl;
+		return;
+	}
+
+	if (this->name == other.name) {
+		std::cerr << "The name of your card is the same as the previous one!" << std::endl;
+		return;
+	}
+
+	if (this->name != nullptr) {
+		this->freeName();
+	}
+
+	this->name = new char[strlen(other.name) + 1];
+	strcpy(this->name, other.name);
+
+	if (other.attackPoints < 0) {
+		std::cerr << "Invalid attack points!" << std::endl;
+		return;
+	}
+
+	this->attackPoints = other.attackPoints;
+
+	if (other.protectPoints < 0) {
+		std::cerr << "Invalid protect points!" << std::endl;
+		return;
+	}
+
+	this->protectPoints = other.protectPoints;
 }
 
 void MonsterCard::freeName() {
@@ -83,43 +110,6 @@ void MonsterCard::setProtectPoints(unsigned int newProtectPoints) {
 	}
 
 	this->protectPoints = newProtectPoints;
-}
-
-void MonsterCard::nameSetterForObj(const MonsterCard& other) {
-	if (other.name == nullptr) {
-		std::cerr << "You new card name is invalid!" << std::endl;
-		return;
-	}
-
-	if (this->name == other.name) {
-		std::cerr << "The name of your card is the same as the previous one!" << std::endl;
-		return;
-	}
-
-	if (this->name != nullptr) {
-		this->freeName();
-	}
-
-	this->name = new char[strlen(other.name) + 1];
-	strcpy(this->name, other.name);
-}
-
-void MonsterCard::attackPointsSetterForObj(const MonsterCard& other) {
-	if (other.attackPoints < 0) {
-		std::cerr << "Invalid attack points!" << std::endl;
-		return;
-	}
-
-	this->attackPoints = other.attackPoints;
-}
-
-void MonsterCard::protectPointsSetterForObj(const MonsterCard& other) {
-	if (other.protectPoints < 0) {
-		std::cerr << "Invalid protect points!" << std::endl;
-		return;
-	}
-
-	this->protectPoints = other.protectPoints;
 }
 
 const char* MonsterCard::getName() const {
