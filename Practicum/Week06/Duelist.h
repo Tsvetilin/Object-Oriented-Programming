@@ -15,9 +15,6 @@ public:
 	void setName(const char* newName);
 	void setDeck(Deck newDeck);
 
-	void nameSetterForObj(const Duelist& other);
-	void deckSetterForObj(const Duelist& other);
-
 	const char* getName() const;
 	Deck getDeck() const;
 
