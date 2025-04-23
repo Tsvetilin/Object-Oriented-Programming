@@ -1,51 +1,43 @@
-#include "AirBnB.h"
-#include "Accommodation.h"
-#include "Location.h"
+﻿#include <iostream>
+#include "SpecialCustomFunction.h"
 
-#include<stdexcept>
+int squarePlusOne(int x) {
+    return x * x + 1;
+}
 
 int main() {
-    Location loc1(10, 20);
-    Location loc2(30, 40);
-    Location loc3(15, 25);
-
-    Accommodation a1(1, "Cozy Apartment", Type::Apartment, loc1, 80.0, true, 0);
-    Accommodation a2(2, "Luxury Villa", Type::Villa, loc2, 150.0, true, 0);
-    Accommodation a3(3, "Downtown Hotel", Type::Hotel, loc3, 120.0, true, 0);
-
-    AirBnB platform;
-    platform.addAccommodation(a1);
-    platform.addAccommodation(a2);
-    platform.addAccommodation(a3);
+    int (*func)(int) = squarePlusOne;
+    const int specialSymbols[] = { 1, 2, 3 };
+    size_t specialSymbolsSize = sizeof(specialSymbols) / sizeof(specialSymbols[0]);
 
     try {
-        platform.reserveById(2, 3);
-        platform.reserveById(1, 2);
+        SpecialCustomFunction customFunc(func, specialSymbols, specialSymbolsSize);
+
+        std::cout << "customFunc(2): " << customFunc(2) << std::endl;
+        std::cout << "customFunc(4): " << customFunc(4) << std::endl;
+
+        ++customFunc;
+        std::cout << "customFunc(3) after ++: " << customFunc(3) << std::endl;
+
+        SpecialCustomFunction negatedFunc = !customFunc;
+        std::cout << "negatedFunc(-4): " << negatedFunc(-4) << std::endl;
+
+        std::cout << "getFunction(5): " << customFunc.getFunction(5) << std::endl;
+
+        std::cout << "Special symbols in customFunc: ";
+        for (size_t i = 0; i < customFunc.getSpecialSymbolsSize(); ++i) {
+            std::cout << customFunc.getSpecialSymbols()[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::invalid_argument& e) {
+        std::cerr << "Invalid argument error: " << e.what() << std::endl;
+        return 1;
     }
     catch (const std::exception& e) {
-        std::cout << "Reservation error: " << e.what() << std::endl;
+        std::cerr << "General error: " << e.what() << std::endl;
+        return 1;
     }
-
-    std::cout << "Total revenue: " << platform.getTotalPriceForAllReservations() << " BGN" << std::endl;
-
-    Accommodation nearest = platform.findNearestAccommodation(12, 22);
-    std::cout << "Nearest accommodation: " << nearest.getName() << std::endl;
-
-    try {
-        platform.cancelReservationById(2);
-    }
-    catch (const std::exception& e) {
-        std::cout << "Cancellation error: " << e.what() << std::endl;
-    }
-
-    try {
-        platform.removeAccommodationById(3);
-    }
-    catch (const std::exception& e) {
-        std::cout << "Remove error: " << e.what() << std::endl;
-    }
-
-	std::cout << "Final total revenue: " << platform.getTotalPriceForAllReservations() << " BGN" << std::endl;
 
     return 0;
 }
