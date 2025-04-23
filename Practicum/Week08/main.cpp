@@ -1,51 +1,33 @@
-#include "AirBnB.h"
-#include "Accommodation.h"
-#include "Location.h"
-
+#include "Computer.h"
+#include "ComputerStore.h"
+#include "ConsultantUtils.h"
 #include<stdexcept>
 
 int main() {
-    Location loc1(10, 20);
-    Location loc2(30, 40);
-    Location loc3(15, 25);
+	try {
+		ComputerStore store("Tech Haven");
 
-    Accommodation a1(1, "Cozy Apartment", Type::Apartment, loc1, 80.0, true, 0);
-    Accommodation a2(2, "Luxury Villa", Type::Villa, loc2, 150.0, true, 0);
-    Accommodation a3(3, "Downtown Hotel", Type::Hotel, loc3, 120.0, true, 0);
+		Computer comp1("Dell", "i7", 3080, 1000, 2.0, 8, 1500.0, 5);
+		Computer comp2("HP", "i5", 3060, 512, 1.5, 10, 1200.0, 3);
+		Computer comp3("Lenovo", "i7", 3090, 2000, 2.2, 12, 2000.0, 2);
 
-    AirBnB platform;
-    platform.addAccommodation(a1);
-    platform.addAccommodation(a2);
-    platform.addAccommodation(a3);
+		store.addComputer(comp1);
+		store.addComputer(comp2);
+		store.addComputer(comp3);
 
-    try {
-        platform.reserveById(2, 3);
-        platform.reserveById(1, 2);
-    }
-    catch (const std::exception& e) {
-        std::cout << "Reservation error: " << e.what() << std::endl;
-    }
+		std::cout << "All Computers:" << std::endl;
+		store.printAll();
 
-    std::cout << "Total revenue: " << platform.getTotalPriceForAllReservations() << " BGN" << std::endl;
+		std::cout << "Buying Dell for 1600:" << std::endl;
+		store.buy("Dell", 1600.0);
 
-    Accommodation nearest = platform.findNearestAccommodation(12, 22);
-    std::cout << "Nearest accommodation: " << nearest.getName() << std::endl;
+		std::cout << "Available Travel Computers:" << std::endl;
+		store.printAvailable(true, false);
 
-    try {
-        platform.cancelReservationById(2);
-    }
-    catch (const std::exception& e) {
-        std::cout << "Cancellation error: " << e.what() << std::endl;
-    }
+	}
+	catch (const std::exception& e) {
+		std::cerr << "An error occurred: " << e.what() << std::endl;
+	}
 
-    try {
-        platform.removeAccommodationById(3);
-    }
-    catch (const std::exception& e) {
-        std::cout << "Remove error: " << e.what() << std::endl;
-    }
-
-	std::cout << "Final total revenue: " << platform.getTotalPriceForAllReservations() << " BGN" << std::endl;
-
-    return 0;
+	return 0;
 }
