@@ -38,8 +38,12 @@ size_t MyString::calcStrLen(const char* str) const {
 }
 
 void MyString::myStrCpy(char* dest, const char* src) {
-    if (!src) throw std::invalid_argument("myStrCpy: source string is null");
-    if (!dest) throw std::invalid_argument("myStrCpy: destination string is null");
+    if (!src) {
+        throw std::invalid_argument("myStrCpy: source string is null");
+    }
+    if (!dest) {
+        throw std::invalid_argument("myStrCpy: destination string is null");
+    }
 
     while (*src) {
         *dest++ = *src++;
