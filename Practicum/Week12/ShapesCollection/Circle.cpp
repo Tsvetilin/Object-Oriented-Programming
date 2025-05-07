@@ -36,22 +36,25 @@ Shape* Circle::clone() const
 	return new Circle(*this);
 }
 
-Intersection Circle::intersect(const Shape* shape) const
+bool Circle::intersect(const Shape* shape) const
 {
 	return shape->intersectWith(this);
 }
 
-Intersection Circle::intersectWith(const Triangle* shape) const
+bool Circle::intersectWith(const Triangle* shape) const
 {
-	return Intersection{ ShapeType::CIRCLE, ShapeType::TRIANGLE };
+	std::cout << "Circle + Triangle" << std::endl;
+	return true;
 }
 
-Intersection Circle::intersectWith(const Rectangle* shape) const
+bool Circle::intersectWith(const Rectangle* shape) const
 {
-	return Intersection{ ShapeType::CIRCLE, ShapeType::RECTANGLE };
+	std::cout << "Circle + Rectangle" << std::endl;
+	return true;
 }
 
-Intersection Circle::intersectWith(const Circle* shape) const
+bool Circle::intersectWith(const Circle* shape) const
 {
-	return Intersection{ ShapeType::CIRCLE, ShapeType::CIRCLE };
+	std::cout << "Circle + Circle" << std::endl;
+	return true;
 }

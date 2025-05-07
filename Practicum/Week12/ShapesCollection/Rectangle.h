@@ -13,9 +13,9 @@ public:
 
 	Shape* clone() const override;
 
-	Intersection intersect(const Shape* shape) const override;
+	bool intersect(const Shape* shape) const override;
 
-	Intersection intersectWith(const Triangle* shape) const override;
-	Intersection intersectWith(const Rectangle* shape) const override;
-	Intersection intersectWith(const Circle* shape) const override;
+	bool intersectWith(const Triangle* shape) const override;
+	bool intersectWith(const Rectangle* shape) const override;
+	bool intersectWith(const Circle* shape) const override;
 };

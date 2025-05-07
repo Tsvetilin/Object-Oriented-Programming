@@ -10,12 +10,6 @@ enum class ShapeType
 	CIRCLE
 };
 
-struct Intersection
-{
-	ShapeType lhsShape;
-	ShapeType rhsShape;
-};
-
 class Triangle;
 class Rectangle;
 class Circle;
@@ -77,11 +71,11 @@ public:
 
 	virtual Shape* clone() const = 0;
 
-	virtual Intersection intersect(const Shape* shape) const = 0;
+	virtual bool intersect(const Shape* shape) const = 0;
 
-	virtual Intersection intersectWith(const Triangle* shape) const = 0;
-	virtual Intersection intersectWith(const Rectangle* shape) const = 0;
-	virtual Intersection intersectWith(const Circle* shape) const = 0;
+	virtual bool intersectWith(const Triangle* shape) const = 0;
+	virtual bool intersectWith(const Rectangle* shape) const = 0;
+	virtual bool intersectWith(const Circle* shape) const = 0;
 
 	virtual ~Shape() noexcept;
 };
