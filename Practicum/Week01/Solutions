@@ -1,0 +1,628 @@
+#include <iostream>
+#include <cmath>
+
+					//EX.1
+namespace MatrixNS
+{
+	double** readMatrix(size_t n, size_t m)
+	{
+		double** matrix = new double*[n];
+		for (size_t i = 0; i < n; i++)
+		{
+			matrix[i] = new double[m];
+			for (size_t j = 0; j < m; j++)
+			{
+				std::cin >> matrix[i][j];
+			}
+		}
+		return matrix;
+	}
+
+	double** transponate(double** matrix, size_t n, size_t m)
+	{
+		double** result = new double*[m];
+		for (size_t i = 0; i < m; i++)
+		{
+			result[i] = new double[n];
+			for (size_t j = 0; j < n; j++)
+			{
+				result[i][j] = matrix[j][i];
+			}
+		}
+		return result;
+	}
+
+	void changeRows(double** matrix,size_t row1, size_t row2)
+	{
+		std::swap(matrix[row1],matrix[row2]);
+	}
+
+	void printMatrix(double** matrix, size_t n, size_t m)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			for (size_t j = 0; j < m; j++)
+			{
+				std::cout << matrix[i][j] << ' ';
+			}
+			std::cout << std::endl;
+		}
+	}
+}
+
+
+					//EX.2
+namespace ComplexNS {
+
+	struct ComplexNum {
+		double real;
+		double imaginary;
+	};
+
+	ComplexNum sumOfComplexNums(ComplexNum a, ComplexNum b)
+	{
+		ComplexNum c;
+			c.real = (a.real + b.real);
+			c.imaginary = (a.imaginary+ b.imaginary);
+		return c;
+	}
+
+	ComplexNum productOfComplexNums(ComplexNum a, ComplexNum b)
+	{
+		ComplexNum c;
+		c.real = ((a.real * b.real) - (a.imaginary * b.imaginary));
+		c.imaginary = ((a.real * b.imaginary) + (a.imaginary * b.real));
+		return c;
+	}
+
+	void  printComplexNum(ComplexNum a)
+	{
+		std::cout << a.real << "+i" << a.imaginary;
+	}
+}
+
+
+					//EX.3
+namespace TriangleNS
+{
+	const size_t trianglePointsCount = 3;
+	const size_t STR_LEN = 128;
+	struct Point
+	{
+		double x;
+		double y;
+	};
+	
+	struct Triangle
+	{
+		char name[STR_LEN+1];
+		Point point1;
+		Point point2;
+		Point point3;
+		double area;
+	};
+
+	double findSide(Point a, Point b)
+	{
+		return sqrt(pow(abs(a.x - b.x),2) + pow(abs(a.y - b.y),2));
+	}
+
+	void findArea(Triangle& triangle)
+	{
+		double side1 = findSide(triangle.point1, triangle.point2);
+		double side2 = findSide(triangle.point3, triangle.point2);
+		double side3 = findSide(triangle.point1, triangle.point3);
+
+		double semiPer = (side1 + side2 + side3) / 2;
+		triangle.area = sqrt(semiPer * (semiPer - side1) * (semiPer - side2) * (semiPer - side3));
+	}
+
+	void sortByArea(Triangle* triangles, const size_t n)
+	{
+		for (size_t i = 0; i < n; i++)
+		{
+			for (size_t j = i+1; j < n; j++)
+			{
+				if (triangles[i].area < triangles[j].area)
+				{
+					std::swap(triangles[i].area, triangles[j].area);
+				}
+			}
+		}
+		for (size_t i = 0; i < n; i++)
+		{
+			std::cout << triangles[i].name;
+		}
+	}
+
+}
+
+	
+					//EX.4
+namespace UniversityNS
+{
+	enum  Major
+	{
+		SI, IS, KN, PM, M, INF
+	};
+	const size_t NAME_LEN = 128;
+	const size_t STDs_LEN = 25;
+	const size_t FN_LEN = 10;
+	struct Student
+	{
+		double mark;
+		char FN[FN_LEN + 1];
+		char name[NAME_LEN + 1];
+		Major major;
+	};
+	struct Group
+	{
+		Student students[STDs_LEN];
+		size_t stdsCount;
+		double avgMark;
+	};
+
+	Group createGroup()
+	{
+		int stdsCount;
+		std::cout << "Number of students: ";
+		std::cin >> stdsCount;
+		std::cin.ignore();
+		Group group;
+		group.stdsCount = stdsCount;
+		double avgMark = 0;
+		for (size_t i = 0; i < stdsCount; i++)
+		{
+			std::cout << "Student mark: ";
+			std::cin >> group.students[i].mark;
+			avgMark += group.students[i].mark;
+			std::cin.ignore();
+
+			std::cout << "Student FN: ";
+			std::cin.getline(group.students[i].FN, FN_LEN, '\n');
+			std::cout << "Student name: ";
+			std::cin.getline(group.students[i].name, NAME_LEN, '\n');
+
+			int major;
+			std::cout << "Students major: ";
+			std::cin >> major;
+			group.students[i].major = Major(major);
+			std::cin.ignore();
+			std::cout << "\tStudent added!\n";
+		}
+		group.avgMark = avgMark / stdsCount;
+		return group;
+	}
+
+	size_t countScholars(Group group, double minMark)
+	{
+		size_t cnt = 0;
+		for (size_t i = 0; i < group.stdsCount; i++)
+		{
+			if (group.students[i].mark < minMark) continue;
+			cnt++;
+		}
+		return cnt;
+	}
+
+
+	void sortByMark(Group& group)
+	{
+		for (size_t i = 0; i < group.stdsCount; i++)
+		{
+			for (size_t j = i+1; j < group.stdsCount; j++)
+			{
+				if (group.students[i].mark < group.students[j].mark)
+					std::swap(group.students[i], group.students[j]);
+			}
+		}
+	}
+	void studentCopy(const Student student, Student scholar)
+	{
+		scholar.mark = student.mark;
+		scholar.major = student.major;
+		strncpy_s(scholar.FN,student.FN,FN_LEN);
+		strncpy_s(scholar.name,student.name,NAME_LEN);
+	}
+	Student* scholars(Group group, double minMark)
+	{
+		sortByMark(group);
+		size_t schCnt = countScholars(group, minMark);
+		Student* scholars = new Student[schCnt];
+
+		for (size_t i = 0; i < schCnt; i++)
+		{
+			studentCopy(group.students[i], scholars[i]);
+		}
+		return scholars;
+	}
+
+	void sortByFN(Group& group)
+	{
+		for (size_t i = 0; i < group.stdsCount; i++)
+		{
+			for (size_t j = i+1; j < group.stdsCount; j++)
+			{
+				if (strcmp(group.students[i].FN, group.students[j].FN) >0)
+					std::swap(group.students[i], group.students[j]);
+			}
+		}
+	}
+	bool checkInGroup(Group group, const char* facNum)
+	{
+		sortByFN(group);
+		if (strcmp(group.students[0].FN, facNum) > 0 || strcmp(group.students[group.stdsCount-1].FN, facNum) < 0)
+			return false;
+
+		for (size_t i = 0; i < group.stdsCount; i++)
+		{
+			if (strcmp(group.students[i].FN, facNum) == 0)
+				return true;
+		}
+		return false;
+	}
+
+}
+
+
+					//EX.5
+namespace PointNS
+{
+	struct Point
+	{
+		double x;
+		double y;
+	};
+
+	Point readPoint()
+	{
+		Point a;
+		std::cin >> a.x;
+		std::cin >> a.y;
+		return a;
+	}
+	void printPoint(Point a)
+	{
+		std::cout << '(' << a.x << ',' << a.y << ')';
+	}
+
+	double findLenFromCenter(Point a)
+	{
+		return sqrt(pow(abs(a.x), 2) + pow(abs(a.y), 2));
+	}
+
+	double disBetwTwoPoints(Point a, Point b)
+	{
+		return sqrt(pow(abs(a.x - b.x), 2) + pow(abs(a.y - b.y), 2));
+	}
+
+	int whichQuadrant(Point a)
+	{
+		if (a.x > 0)
+		{
+			if (a.y > 0) return 1;
+			return 3;
+		}
+		if (a.y > 0) return 2;
+		return 4;
+	}
+
+	bool isInsideCircle(double rad, Point a)
+	{
+		return findLenFromCenter(a) <= rad;
+	}
+}
+
+
+					//EX.6
+namespace ItNS
+{
+	const size_t NAME_LEN = 100;
+	const size_t MAX_WORKERS = 100;
+	enum Positions {
+		SoftwareEngineer, SeniorSoftwareEngineer, EngineerManager, LeadSoftwareEngineer
+	};
+	const char* positionNames[] = { "Software Engineer", "Senior Software Engineer", "Engineer Manager", "Lead Software Engineer" };
+	struct ITworker
+	{
+		char name[NAME_LEN + 1];
+		Positions pos;
+		double salary;
+		int mark;
+	};
+
+	ITworker createWorker()
+	{
+		ITworker worker;
+		char name[NAME_LEN + 1];
+		std::cout << "Worker name: ";  
+		std::cin.getline(name, NAME_LEN, '\n');
+		strcpy_s(worker.name, name);
+		
+		int pos;
+		std::cout << "Worker pos: ";
+		std::cin >> pos;
+		worker.pos = Positions(pos);
+		std::cin.ignore();
+
+		std::cout << "Worker salary: ";
+		std::cin >> worker.salary;
+		std::cin.ignore();
+
+		std::cout << "Worker It knowledge: ";
+		std::cin >> worker.mark;
+		std::cin.ignore();
+
+		return worker;
+	}
+
+	void printWorker(ITworker worker)
+	{
+		std::cout << "Worker name: " << worker.name << '\n';
+		std::cout << "Worker pos: " << positionNames[worker.pos] << '\n';
+		std::cout << "Worker salary: " << worker.salary << '\n';
+		std::cout << "Worker It knowledge: " << worker.mark << '\n' << std::endl;
+	}
+
+	struct Company
+	{
+		ITworker workers[MAX_WORKERS];
+		double avgSalary;
+		size_t workersCnt;
+	};
+
+	Company createCompany()
+	{
+		std::cout << "Number of workers: ";
+		size_t n;
+		std::cin >> n;
+		std::cin.ignore();
+		Company comp;
+		comp.workersCnt = n;
+		for (size_t i = 0; i < comp.workersCnt; i++)
+		{
+			comp.workers[i] = createWorker();
+			std::cout << "\tWorker added!\n";
+		}
+		return comp;
+	}
+
+	size_t aboveAvgSalaryCnt(Company comp)
+	{
+		size_t cnt = 0;
+		for (size_t i = 0; i < comp.workersCnt; i++)
+		{
+			if (comp.workers[i].salary < comp.avgSalary) continue;
+			cnt++;
+		}
+		return cnt;
+	}
+
+	void sortBySalary(Company& comp)
+	{
+		for (size_t i = 0; i < comp.workersCnt; i++)
+		{
+			for (size_t j = i + 1; j < comp.workersCnt; j++)
+			{
+				if (comp.workers[i].salary < comp.workers[j].salary)
+					std::swap(comp.workers[i].salary, comp.workers[j].salary);
+			}
+		}
+	}
+
+	void sortByName(ITworker*& workers, const size_t cnt)
+	{
+		for (size_t i = 0; i < cnt; i++)
+		{
+			for (size_t j = i + 1; j < cnt; j++)
+			{
+				if (strcmp(workers[i].name, workers[j].name))
+					std::swap(workers[i].name, workers[j].name);
+			}
+		}
+	}
+
+	ITworker* highEarners(Company comp)
+	{
+		sortBySalary(comp);
+		size_t highEarnersCnt = aboveAvgSalaryCnt(comp);
+		ITworker* res = new ITworker[highEarnersCnt];
+		for (size_t i = 0; i < highEarnersCnt; i++)
+		{
+			res[i] = comp.workers[i];
+		}
+		sortByName(res,highEarnersCnt);
+		return res;
+	}
+
+	void minAndMaxMarkInPosition(Company comp, Positions pos)
+	{
+		int minMark = INT16_MAX;
+		int maxMark = INT16_MIN;
+		
+		for (size_t i = 0; i < comp.workersCnt; i++)
+		{
+			if (comp.workers[i].pos != (int)pos) continue;
+
+			if (minMark > comp.workers[i].mark)
+				minMark = comp.workers[i].mark;
+			if (maxMark < comp.workers[i].mark)
+				maxMark = comp.workers[i].mark;
+		}
+		if (maxMark == INT16_MIN || minMark == INT16_MAX) return;
+		std::cout << positionNames[pos] << ":  ";
+		std::cout << "Min mark: " << minMark << ", Max mark: " << maxMark <<'\n';
+	}
+
+	void minAndMaxMarkInAllPositions(Company comp)
+	{
+		minAndMaxMarkInPosition(comp, Positions(SoftwareEngineer));
+		minAndMaxMarkInPosition(comp, Positions(SeniorSoftwareEngineer));
+		minAndMaxMarkInPosition(comp, Positions(EngineerManager));
+		minAndMaxMarkInPosition(comp, Positions(LeadSoftwareEngineer));
+	}
+}
+
+
+					//EX.7
+namespace GraphsNS
+{
+	const size_t NODE_LEN = 10;
+	struct Edge
+	{
+		char startNode[NODE_LEN];
+		char endNode[NODE_LEN];
+	};
+	struct Graph
+	{
+		Edge* edges;
+		size_t nodesCnt;
+		size_t edgesCnt;
+	};
+
+	bool inGraphEdges(const char* start, const char* end, const Graph& graph)
+	{
+		for (size_t i = 0; i < graph.edgesCnt; i++)
+		{
+			if ((strcmp(start, graph.edges[i].startNode) == 0) && (strcmp(start, graph.edges[i].endNode) == 0))
+				return true;
+		}
+		return false;
+	}
+
+	bool inGraphNodes(const char* node, Graph graph)
+	{
+		for (size_t i = 0; i < graph.edgesCnt; i++)
+		{
+			if (strcmp(node, graph.edges[i].startNode) == 0 || strcmp(node, graph.edges[i].endNode) == 0)
+				return true;
+		}
+		return false;
+	}
+
+	Graph createGraph()
+	{
+		size_t edgesCount;
+		size_t nodesCount=0;
+		std::cin >> edgesCount;
+		std::cin.ignore();
+		Graph graph;
+		graph.edgesCnt = edgesCount;
+		char startNode[NODE_LEN];
+		char endNode[NODE_LEN];
+		for (size_t i = 0; i < graph.edgesCnt; i++)
+		{
+			std::cout << "Start node: ";
+			std::cin.getline(startNode, NODE_LEN, '\n');
+			std::cin.ignore();
+			std::cout << "End node: ";
+			std::cin.getline(endNode, NODE_LEN, '\n');	
+			std::cin.ignore();
+			if (strcmp(startNode, endNode) == 0 || inGraphEdges(startNode, endNode, graph))
+			{
+				std::cout << "Invalid!";
+				continue;
+			}
+			if (!inGraphNodes(startNode,graph))
+				nodesCount++;
+			if (!inGraphNodes(endNode,graph))
+				nodesCount++;
+			strcpy_s(graph.edges[i].startNode, startNode);
+			strcpy_s(graph.edges[i].endNode, endNode);
+		}
+		return graph;
+	}
+
+	void deleteGraph(Graph graph)
+	{
+		delete[] graph.edges;
+	}
+
+	void addEdge(Graph& graph)
+	{
+		char v1[NODE_LEN], v2[NODE_LEN];
+		std::cout << "Node 1:";
+		std::cin.getline(v1, NODE_LEN, '\n');
+		std::cout << "Node 2:";
+		std::cin.getline(v2, NODE_LEN, '\n');
+		if (inGraphEdges(v1, v2, graph))
+			return;
+
+		graph.edgesCnt++; 
+		strcpy_s(graph.edges[graph.edgesCnt].startNode,v1);
+		strcpy_s(graph.edges[graph.edgesCnt].endNode,v2);
+
+		if (inGraphNodes(v1, graph) || inGraphNodes(v2, graph))\
+			graph.nodesCnt++;
+
+		else	graph.nodesCnt += 2;
+	}
+
+	bool isStartNode(const char* node, Edge edge)
+	{
+		return !strcmp(node, edge.startNode);
+	}
+
+	bool isEndNode(const char* node, Edge edge)
+	{
+		return !strcmp(node, edge.endNode);
+	}
+
+	void findNodeDegrees(const char* node, Graph graph)
+	{
+		if (!inGraphNodes(node, graph))
+			return;
+		size_t posDeg = 0;
+		size_t negDeg = 0;
+		for (size_t i = 0; i < graph.edgesCnt; i++)
+		{
+			if (isStartNode(node, graph.edges[i]))
+				posDeg++;
+			else if (isEndNode(node, graph.edges[i]))
+				negDeg++;
+		}
+		std::cout << "Positive degree: " << posDeg;
+		std::cout << "Negative degree: " << negDeg;
+	}
+
+	bool isGraphFull(Graph graph)
+	{
+		return (graph.nodesCnt * (graph.nodesCnt - 1)) == graph.edgesCnt;
+	}
+
+
+	bool areSame(Edge edge1, Edge edge2)
+	{
+		return (edge1.startNode == edge2.startNode) && (edge1.endNode == edge2.endNode);
+	}
+
+	Edge* removeEdge(Edge edge, Graph graph)
+	{
+		Edge* edges = new Edge[graph.edgesCnt -1];
+		size_t j = 0;
+		for (size_t i = 0; i < graph.edgesCnt; i++)
+		{
+			if (areSame(edge, graph.edges[i]))	continue;
+			edges[j++] = graph.edges[i];
+		}
+	}
+
+	void deleteGraph(Edge edge, Graph& graph)
+	{
+		if (!inGraphEdges(edge.startNode, edge.endNode, graph))
+		{
+			std::cout<<"Edge is not in graph!";
+			return;
+		}
+		graph.edges = removeEdge(edge, graph);
+		graph.edgesCnt--;
+		if (!inGraphNodes(edge.startNode, graph)) graph.nodesCnt--;
+		if (!inGraphNodes(edge.endNode, graph)) graph.nodesCnt--;
+	}
+}
+	
+int main()
+{
+
+
+}
