@@ -1,34 +1,44 @@
-#include <iostream>
-#include "Optional.h"
+#include<iostream>
+#include "Monster.h"
+#include "Sphynx.h"
+#include "Centaur.h"
+#include "Minotaur.h"
+
+Monster* generateMonsters(int i) {
+    switch (i % 3) {
+    case 0: return new Minotaur();
+    case 1: return new Centaur();
+    case 2: return new Sphynx();
+    default: return nullptr;
+    }
+}
+
+const int SIZE = 15;
 
 int main() {
-	Optional<int> opt1;
-	std::cout << "opt1 has value: " << std::boolalpha << opt1.hasValue() << std::endl;
+    Monster* monsters[SIZE];
 
-	opt1.setValue(42);
-	std::cout << "opt1 has value: " << opt1.hasValue() << ", value: " << *opt1 << std::endl;
+    for (int i = 0; i < SIZE; ++i) {
+        monsters[i] = generateMonsters(i);
+    }
 
-	Optional<int> opt2(opt1);
-	std::cout << "opt2 has value: " << opt2.hasValue() << ", value: " << opt2.getValue() << std::endl;
+    int i = 5;
+    Monster* chosen = monsters[i];
+    int wins = 0;
 
-	opt1.reset();
-	std::cout << "opt1 has value after reset: " << opt1.hasValue() << std::endl;
+    for (int j = 0; j < SIZE; ++j) {
+        if (j == i) {
+            continue;
+        }
+        wins += chosen->canBeat(monsters[j]);
+    }
 
-	Optional<int> opt3;
-	opt3 = opt2;
-	std::cout << "opt3 has value after assignment: " << opt3.hasValue() << ", value: " << *opt3 << std::endl;
+    std::cout << "Monster at position " << i << " is a " << chosen->getTypeName() << std::endl;
+    std::cout << "It will win against " << wins << " other monsters." << std::endl;
 
-	Optional<std::string> optStr("Hello Optional!");
-	if (optStr.hasValue()) {
-		std::cout << "optStr: " << *optStr << std::endl;
-	}
+    for (int i = 0; i < SIZE; ++i) {
+        delete monsters[i];
+    }
 
-	try {
-		opt1.getValue();
-	}
-	catch (const std::exception& ex) {
-		std::cout << "Exception: " << ex.what() << std::endl;
-	}
-
-	return 0;
+    return 0;
 }
