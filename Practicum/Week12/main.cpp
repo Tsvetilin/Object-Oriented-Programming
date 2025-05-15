@@ -1,31 +1,34 @@
 #include <iostream>
-#include "Stack.hpp"
+#include "Optional.h"
 
 int main() {
-    Stack<int, 5> s;
+	Optional<int> opt1;
+	std::cout << "opt1 has value: " << std::boolalpha << opt1.hasValue() << std::endl;
 
-    try {
-        s.push(10);
-        s.push(20);
-        s.push(30);
+	opt1.setValue(42);
+	std::cout << "opt1 has value: " << opt1.hasValue() << ", value: " << *opt1 << std::endl;
 
-        std::cout << "Top element: " << s.top() << std::endl;
-        std::cout << "Stack size: " << s.getSize() << std::endl;
+	Optional<int> opt2(opt1);
+	std::cout << "opt2 has value: " << opt2.hasValue() << ", value: " << opt2.getValue() << std::endl;
 
-        s.pop();
-        std::cout << "Top element after pop: " << s.top() << std::endl;
-        std::cout << "Stack size after pop: " << s.getSize() << std::endl;
+	opt1.reset();
+	std::cout << "opt1 has value after reset: " << opt1.hasValue() << std::endl;
 
-        while (!s.empty()) {
-            std::cout << "Popping: " << s.top() << std::endl;
-            s.pop();
-        }
+	Optional<int> opt3;
+	opt3 = opt2;
+	std::cout << "opt3 has value after assignment: " << opt3.hasValue() << ", value: " << *opt3 << std::endl;
 
-        s.pop();
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
+	Optional<std::string> optStr("Hello Optional!");
+	if (optStr.hasValue()) {
+		std::cout << "optStr: " << *optStr << std::endl;
+	}
 
-    return 0;
+	try {
+		opt1.getValue();
+	}
+	catch (const std::exception& ex) {
+		std::cout << "Exception: " << ex.what() << std::endl;
+	}
+
+	return 0;
 }
