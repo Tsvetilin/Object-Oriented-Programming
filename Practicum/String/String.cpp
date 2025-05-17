@@ -10,9 +10,8 @@ String::String(const char* data) : size(strlen(data)), capacity(allocateCapacity
 	strcpy(this->data, data);
 }
 
-String::String(size_t newSize) : size(0)
+String::String(size_t newSize) : size(0), capacity(allocateCapacity(newSize))
 {
-	this->capacity = allocateCapacity(this->size);
 	this->data = new char[this->capacity] { '\0' };
 }
 
